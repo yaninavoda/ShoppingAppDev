@@ -14,6 +14,6 @@ namespace ShoppingAppDev.Data
         public DbSet<Supermarket> Supermarkets { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetails> OrderDetails { get; set; }
+
     }
 }
-
