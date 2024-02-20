@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 using ShoppingAppDev.Data;
 using ShoppingAppDev.Models;
 
@@ -20,9 +21,43 @@ namespace ShoppingAppDev.Controllers
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchFilter)
         {
-            return View(await _context.Customers.ToListAsync());
+            ViewData["ByLastName"] = string.IsNullOrEmpty(sortOrder) ?
+                "LastName_desc" :
+                string.Empty;
+
+            ViewData["ByAddress"] = sortOrder == "Address" ?
+                "Address_desc" :
+                "Address";
+
+            ViewData["CurrentFilter"] = searchFilter;
+
+            var customers = from s in _context.Customers
+                            select s;
+
+            if (!string.IsNullOrEmpty(searchFilter))
+            {
+                customers = customers.Where(s => s.LastName.Contains(searchFilter)
+                                       || s.FirstName.Contains(searchFilter));
+            }
+
+            switch (sortOrder)
+            {
+                case "LastName_desc":
+                    customers = customers.OrderByDescending(s => s.LastName);
+                    break;
+                case "Address":
+                    customers = customers.OrderBy(s => s.Address);
+                    break;
+                case "Address_desc":
+                    customers = customers.OrderByDescending(s => s.Address);
+                    break;
+                default:
+                    customers = customers.OrderBy(s => s.LastName);
+                    break;
+            }
+            return View(await customers.AsNoTracking().ToListAsync());
         }
 
         // GET: Customers/Details/5
@@ -34,7 +69,8 @@ namespace ShoppingAppDev.Controllers
             }
 
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (customer == null)
             {
                 return NotFound();
@@ -43,6 +79,7 @@ namespace ShoppingAppDev.Controllers
             return View(customer);
         }
 
+
         // GET: Customers/Create
         public IActionResult Create()
         {
@@ -50,17 +87,25 @@ namespace ShoppingAppDev.Controllers
         }
 
         // POST: Customers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Address,Discount")] Customer customer)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(customer);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists " +
+                    "see your system administrator.");
             }
             return View(customer);
         }
@@ -74,6 +119,7 @@ namespace ShoppingAppDev.Controllers
             }
 
             var customer = await _context.Customers.FindAsync(id);
+
             if (customer == null)
             {
                 return NotFound();
@@ -82,8 +128,6 @@ namespace ShoppingAppDev.Controllers
         }
 
         // POST: Customers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Address,Discount")] Customer customer)
