@@ -19,13 +19,6 @@ namespace ShoppingAppDev.Controllers
             _context = context;
         }
 
-        // GET: Supermarkets
-        //public async Task<IActionResult> Index(int? pageNumber)
-        //{
-        //    var markets = await _context.Supermarkets.ToListAsync();
-        //    return View(markets);
-        //}
-
         public async Task<IActionResult> Index(int? pageNumber)
         {
             int pageSize = 5; // Your desired page size
