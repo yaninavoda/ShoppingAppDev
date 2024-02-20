@@ -6,10 +6,12 @@ namespace ShoppingAppDev.Models
     {
         public int Id { get; set; }
 
-        [StringLength(50)]
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} must be less than 50 characters.")]
         public string Name { get; set; }
 
-        [StringLength(100)]
+        [Required]
+        [StringLength(100, ErrorMessage = "{0} must be less than 100 characters.")]
         public string Address { get; set; }
     }
 }

@@ -6,16 +6,29 @@ namespace ShoppingAppDev.Models
     {
         public int Id { get; set; }
 
-        [StringLength(50)]
+
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} must be less than 50 characters.")]
         public string FirstName { get; set; }
 
-        [StringLength(50)]
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} must be less than 50 characters.")]
         public string LastName { get; set; }
 
-        [StringLength(50)]
+        [Required]
+        [StringLength(50, ErrorMessage = "{0} must be less than 50 characters.")]
         public string Address { get; set; }
         public int Discount { get; set; }
 
-        public ICollection<Order> Orders { get; set; }
+
+        [Display(Name = "Full Name")]
+        public string FullName
+        {
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+        }
+        //public ICollection<Order?> Orders { get; set; }
     }
 }

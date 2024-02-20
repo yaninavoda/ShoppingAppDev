@@ -20,9 +20,10 @@ namespace ShoppingAppDev.Controllers
         }
 
         // GET: Supermarkets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            return View(await _context.Supermarkets.ToListAsync());
+            var markets = await _context.Supermarkets.ToListAsync();
+            return View(markets);
         }
 
         // GET: Supermarkets/Details/5
