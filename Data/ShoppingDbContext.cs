@@ -3,9 +3,9 @@ using ShoppingAppDev.Models;
 
 namespace ShoppingAppDev.Data
 {
-    public class ShoppingContext : DbContext
+    public class ShoppingDbContext : DbContext
     {
-        public ShoppingContext(DbContextOptions<ShoppingContext> options) : base(options)
+        public ShoppingDbContext(DbContextOptions<ShoppingDbContext> options) : base(options)
         {
         }
 

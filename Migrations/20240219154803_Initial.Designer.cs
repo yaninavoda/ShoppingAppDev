@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShoppingAppDev.Data;
 
@@ -11,9 +12,11 @@ using ShoppingAppDev.Data;
 namespace ShoppingAppDev.Migrations
 {
     [DbContext(typeof(ShoppingDbContext))]
-    partial class ShoppingContextModelSnapshot : ModelSnapshot
+    [Migration("20240219154803_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,6 +74,10 @@ namespace ShoppingAppDev.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("SupermarketId");
 
                     b.ToTable("Orders");
                 });
@@ -148,10 +155,29 @@ namespace ShoppingAppDev.Migrations
                     b.ToTable("Supermarkets");
                 });
 
+            modelBuilder.Entity("ShoppingAppDev.Models.Order", b =>
+                {
+                    b.HasOne("ShoppingAppDev.Models.Customer", "Customer")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoppingAppDev.Models.Supermarket", "Supermarket")
+                        .WithMany()
+                        .HasForeignKey("SupermarketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Supermarket");
+                });
+
             modelBuilder.Entity("ShoppingAppDev.Models.OrderDetails", b =>
                 {
                     b.HasOne("ShoppingAppDev.Models.Order", "Order")
-                        .WithMany("OrderDetails")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -166,9 +192,9 @@ namespace ShoppingAppDev.Migrations
                         .HasForeignKey("OrderDetailsId");
                 });
 
-            modelBuilder.Entity("ShoppingAppDev.Models.Order", b =>
+            modelBuilder.Entity("ShoppingAppDev.Models.Customer", b =>
                 {
-                    b.Navigation("OrderDetails");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("ShoppingAppDev.Models.OrderDetails", b =>

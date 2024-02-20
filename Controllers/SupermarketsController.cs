@@ -12,19 +12,36 @@ namespace ShoppingAppDev.Controllers
 {
     public class SupermarketsController : Controller
     {
-        private readonly ShoppingContext _context;
+        private readonly ShoppingDbContext _context;
 
-        public SupermarketsController(ShoppingContext context)
+        public SupermarketsController(ShoppingDbContext context)
         {
             _context = context;
         }
 
-        // GET: Supermarkets
         public async Task<IActionResult> Index(int? pageNumber)
         {
-            var markets = await _context.Supermarkets.ToListAsync();
-            return View(markets);
+            int pageSize = 5; // Your desired page size
+            int totalCount = await _context.Supermarkets.CountAsync();
+
+            int actualPageNumber = pageNumber ?? 1;
+
+            var data = await _context.Supermarkets
+                                     .Skip((actualPageNumber - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToListAsync();
+
+            var model = new PaginationModel
+            {
+                Supermarkets = data,
+                CurrentPage = actualPageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
+            };
+
+            return View(model);
         }
+
 
         // GET: Supermarkets/Details/5
         public async Task<IActionResult> Details(int? id)
