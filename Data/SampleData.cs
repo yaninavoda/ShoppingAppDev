@@ -5,7 +5,7 @@ namespace ShoppingAppDev.Data
 {
     public static class SampleData
     {
-        public static void Initialize(ShoppingContext context)
+        public static void Initialize(ShoppingDbContext context)
         {
             context.Database.EnsureCreated();
 

@@ -4,7 +4,7 @@ using ShoppingAppDev.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ShoppingContext>(options =>
+builder.Services.AddDbContext<ShoppingDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllersWithViews();
@@ -43,7 +43,7 @@ void CreateDbIfNotExists(WebApplication app)
         var services = scope.ServiceProvider;
         try
         {
-            var context = services.GetRequiredService<ShoppingContext>();
+            var context = services.GetRequiredService<ShoppingDbContext>();
             SampleData.Initialize(context);
         }
         catch (Exception ex)
