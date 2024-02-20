@@ -12,9 +12,9 @@ namespace ShoppingAppDev.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly ShoppingContext _context;
+        private readonly ShoppingDbContext _context;
 
-        public ProductsController(ShoppingContext context)
+        public ProductsController(ShoppingDbContext context)
         {
             _context = context;
         }
